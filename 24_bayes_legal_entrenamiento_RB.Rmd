@@ -517,22 +517,22 @@ Hace unos años se publicó la noticia de que un juez británico decidió que el
 
 Veamos como se suele emplear para determinar la probabilidad de que un acusado sea culpable.
 
-El _momio_ (razón de probabilidades), de que el acusado sea culpable respecto a ser inocente, antes de observar ninguna prueba o evidencia es:
-$$
-O(Culpable) = \frac{P(Culpable)}{P(Inocente)}
-$$
 Si conocemos la probabilidad de que se produzca la evidencia _E_ cuando elsospechoso es culpable.
 
 $$
 P(E|Culpable)
 $$
-Así como la probabilidad de que se produzca la evidencia __E_ cuando el sospechoso no es culpable.
+Así como la probabilidad de que se produzca la evidencia _E_ cuando el sospechoso no es culpable.
 
 $$
 P(E|Inocente) 
 $$
+El _momio_ (razón de probabilidades), de que el acusado sea culpable respecto a ser inocente, antes de observar ninguna prueba o evidencia es:
+$$
+O(Culpable) = \frac{P(Culpable)}{P(Inocente)}
+$$
 
-Entonces podemos calcular el _momio_ de que el acusado sea culpable cuando hemos observado la evidencia E, respecto de la probabilidad de que sea inocente.
+Ahora podemos calcular el _momio_ de que el acusado sea culpable cuando hemos observado la evidencia E, respecto de la probabilidad de que sea inocente.
 
 $$
 O(Culpable|E)= \frac{P(E|Culpable)}{P(E|No culpable)}\cdot O(Culpable)
@@ -960,14 +960,17 @@ bayes_dulces <- function(n_muestra, n_limon, bolsas, prop_dulces)
 ¿Qué tipo de bolsa puedo tener si tomo una muestra de 11 dulces y obtengo 8 dulces de limón?
  
 ```{r, echo=FALSE}
-  a <- bayes_dulces(11, 8, priors, dulces_limon_bi)
+  a <- bayes_dulces(10, 8, priors, dulces_limon_bi)
 
 options(kableExtra.auto_format = FALSE)
 panderOptions("table.style", "simple")
 panderOptions("digits", 4)
 pander(tibble(bolsa=c("b1", "b2", "b3", "b4", "b5"), posterior=a), caption = "Probabilidades a posteriori para cada tipo de bolsa", justify = "center")
+
 ```
 
+
+Claramente la bolsa $b_1$ no puede producir dulces de limón y la $b_5$ sólo puede producir dulces de limón, así que las probabilidades de cualquier cosa distinto de esas condiciones está asociada a un valor de cero.
 
 
 
