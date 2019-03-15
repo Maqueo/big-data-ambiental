@@ -306,6 +306,7 @@ En este caso la probabilidad de haber estado en Asia dado que se te encontró un
 ```{r}
 # load the data.
 data(lizards)
+write.csv(lizards, "lagartijas.csv")
 # create and plot the network structure.
 dag = model2network("[Species][Diameter|Species][Height|Species]")
 graphviz.plot(dag, shape = "ellipse")
