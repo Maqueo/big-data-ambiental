@@ -15,12 +15,7 @@ Los paquetes que usaremos en esta sección son:
 * CRAN: tidyverse (dplyr, ggplot2, purrr), bnlearn, 
 BiocManager, igraph, gRain, pander.
 
-* Bioconductor: Rgraphviz, RBGL
-
-```
-install.packages("BiocManager")
-BiocManager::install("Rgraphviz")
-```
+* bnviewer
 
 Y las referencias son @koller, @ross y @wasserman.
 
@@ -35,11 +30,12 @@ Y las referencias son @koller, @ross y @wasserman.
 #if (!requireNamespace("RBGL", quietly = TRUE))
 #    BiocManager::install("RBGL", ask = FALSE)
 #}
-
+#install.packages("BiocManager")
 library(tidyverse)
 library(magrittr)
 library(pander)
 library(bnlearn)
+library(bnviewer)
 library(ggplot2)
 ```
 
@@ -158,7 +154,10 @@ fit_1 <- bn.fit(grafica_1, dat)
 logLik(fit_1, data = dat)
 aic_dev(fit_1, data = dat) 
 
-graphviz.plot(grafica_1)
+viewer(grafica_1, bayesianNetwork.title = "Red 1", node.shape = c("circle"), 
+       node.colors = list(background = "#f4bafd", border = "#2b7ce9",
+                          highlight = list(background = "#97c2fc",
+                                           border = "#2b7ce9")))
 ```
 
 Ahora agregamos $a\to b$, que también mejora el AIC:
@@ -170,8 +169,8 @@ fit_2 <- bn.fit(grafica_2, dat)
 logLik(fit_2, data = dat)
 aic_dev(fit_2, data = dat) 
 
-graphviz.plot(grafica_2)
-
+viewer(grafica_2, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "Gráfica 2")
 ```
 
 Igualmente, agregar $a\to c$ merjoar el AIC:
@@ -183,7 +182,8 @@ fit_3 <- bn.fit(grafica_3, dat)
 logLik(fit_3, data = dat )
 aic_dev(fit_3, data = dat) 
 
-graphviz.plot(grafica_3)
+viewer(grafica_3, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "Gráfica 3")
 ```
 
 
@@ -203,7 +203,10 @@ arcs(grafica_4) <- matrix(c('a','d','a','b','a','c','b','d','c','d'), ncol = 2,
 fit_4 <- bn.fit(grafica_4, dat)
 logLik(fit_4, data = dat )
 aic_dev(fit_4, data = dat) 
-graphviz.plot(grafica_4)
+
+viewer(grafica_4, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "Gráfica 4")
+
 ```
 
 Ahora nótese que podemos eliminar $a\to d$, y mejoramos el AIC:
@@ -215,7 +218,9 @@ arcs(grafica_5) <- matrix(c('a','b','a','c','b','d','c','d'), ncol = 2,
 fit_5 <- bn.fit(grafica_5, dat)
 logLik(fit_5, data = dat )
 aic_dev(fit_5, data = dat) 
-graphviz.plot(grafica_5)
+viewer(grafica_5, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "Gráfica 5")
+
 ```
 
 Este última gráfica es el modelo original. La eliminación de arcos
@@ -226,7 +231,8 @@ El algoritmo de _ascenso de colina_ como está implementado en _bn.learn_ result
 
 ```{r, fig.height=4}
 graf_hc <- hc(dat, score='aic')
-graphviz.plot(graf_hc)
+viewer(graf_hc, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "graf HC")
 ```
 
 **Ejemplo: Cambios de dirección**
@@ -248,14 +254,18 @@ Supongamos que comenzamos agregando la arista $d\to c$ (sentido incorrecto).
 ```{r, fig.height=4}
 grafica_0 <- empty.graph(c('b','c','d'))
 arcs(grafica_0) <- matrix(c('d','c'), ncol=2, byrow=T)
-graphviz.plot(grafica_0)
+viewer(grafica_0, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica 0")
+
 ```
 
 En el primer paso, agregamos $b \to d$, que muestra una mejora grande:
 
 ```{r, fig.height=4}
 graf_x <- hc(dat, start= grafica_0, score='aic', max.iter=1)
-graphviz.plot(graf_x)
+viewer(graf_x, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "graf X")
+
 ```
 
 Pero en el siguiente paso nos damos cuenta que podemos mejorar
@@ -264,7 +274,9 @@ no sólo de $b$ sino también de $c$, y cambiamos dirección:
 
 ```{r}
 graf_x <- hc(dat, start= grafica_0, score='aic', max.iter=2)
-graphviz.plot(graf_x)
+viewer(graf_x, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "graf X")
+
 ```
 
 Podemos examinar cada paso del algoritmo:
@@ -296,7 +308,9 @@ names(dat) <- c('a','b','c','d','e','f','g')
 
 ```{r}
 grafica.1 <- hc(dat, score='bic')
-graphviz.plot(grafica.1)
+viewer(grafica.1, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica 1")
+
 ```
 
 ```{r}
@@ -317,7 +331,9 @@ names(dat) <- c('a','b','c','d','e','f','g')
 
 ```{r}
 grafica.1 <- hc(dat, score='aic')
-graphviz.plot(grafica.1)
+viewer(grafica.1, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica 1")
+
 ```
 
 En este ejemplo, con el AIC obtenemos algunas aristas espurias, que en todo
@@ -356,7 +372,9 @@ names(dat) <- c('a','b','c','d','e','f','g')
 
 ```{r}
 grafica.1 <- hc(dat, score='bic')
-graphviz.plot(grafica.1)
+viewer(grafica.1, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica 1")
+
 ```
 
 Nótese que en este ejemplo BIC falla en identificar una dependencia, y afirma
@@ -365,7 +383,9 @@ la dependencia con un modelo demasiado complejo (tres flechas espurias):
 
 ```{r}
 grafica.1 <- hc(dat, score='aic')
-graphviz.plot(grafica.1)
+viewer(grafica.1, bayesianNetwork.layout = "layout_as_tree", edges.smooth = TRUE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica 1")
+
 ```
 
 Sin embargo, si sabemos, por ejemplo, que no debe haber una flecha de c a f, y tiene
@@ -375,13 +395,16 @@ que haber una de a a c, podemos mejorar nuestros modelos:
 b.list <- data.frame(from=c('c','f'), to=c('f','c'))
 w.list <- data.frame(from=c('a'), to=c('c'))
 grafica.bic <- hc(dat, score='bic', blacklist=b.list, whitelist=w.list)
-graphviz.plot(grafica.bic)
+viewer(grafica.bic, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica BIC")
+
 ```
 
 
 ```{r}
 grafica.aic <- hc(dat, score='aic', blacklist=b.list, whitelist=w.list)
-graphviz.plot(grafica.aic)
+viewer(grafica.aic, bayesianNetwork.layout = "layout_with_gem", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica AIC")
 ```
 
 En este ejemplo estamos seguros de las aristas que forzamos. Muchas
@@ -412,7 +435,10 @@ Supongamos que comenzamos agregando la arista $d\to b$ (sentido incorrecto).
 
 
 ```{r}
-graphviz.plot(hc(dat.x, score='bic', whitelist=data.frame(from=c('d'), to=c('b'))))
+viewer(hc(dat.x, score='bic', whitelist=data.frame(from=c('d'), to=c('b'))), bayesianNetwork.layout = "layout_with_gem", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica HC BIC")
+
+
 ```
 
 Y no aprendimos nada, pues cualquier conjunta se factoriza de esta manera.
@@ -446,15 +472,19 @@ grafica.bic <- hc(dat, score='bic')
 
 
 ```{r}
-graphviz.plot(grafica.bic)
+viewer(grafica.bic, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica BIC")
 arcos <- grafica.bic$arcs
 arcos
 arcos[3,] <- c('g','f')
 arcos[6,] <- c('f','e')
 grafica.2 <- grafica.bic
 arcs(grafica.2) <- arcos
-graphviz.plot(grafica.2)
-graphviz.plot(grafica.bic)
+viewer(grafica.2, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica 2")
+viewer(grafica.bic, bayesianNetwork.layout = "layout_with_sugiyama", edges.smooth = FALSE, 
+       node.shape = c("circle"), bayesianNetwork.title = "gráfica BIC")
+
 ```
 
 Vemos que no cambia la log-verosimilitud, ni ninguno de nuestros scores. 
